@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BioGraph | بیوگرافی</title>
+  <meta name="description" content="پایگاه جامع زندگینامه مشاهیر ایران و جهان" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Vazirmatn', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Vazirmatn', sans-serif; background: #F4F5F9; color: #0F1629; margin: 0; }
+    a, button { transition: all .15s ease; }
+    html { scroll-behavior: smooth; }
+
+    /* ── CSS Variables (color palette) ── */
+    :root {
+      --primary:       #5B52E8;
+      --primary-dark:  #4A42D0;
+      --primary-10:    rgba(91,82,232,.10);
+      --primary-20:    rgba(91,82,232,.20);
+      --fg:            #0F1629;
+      --bg:            #F4F5F9;
+      --card:          #FFFFFF;
+      --border:        #D5D9E4;
+      --muted:         #EEF0F5;
+      --muted-fg:      #596A82;
+      --secondary:     #E8EAF0;
+      --destructive:   #DC2626;
+    }
+
+    /* ── Utilities ── */
+    .line-clamp-2 { overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2; }
+    .line-clamp-3 { overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3; }
+
+    /* ── Form Controls ── */
+    .inp {
+      width:100%; height:40px; padding:0 12px;
+      border-radius:12px; border:1px solid var(--border);
+      background:var(--bg); font-family:'Vazirmatn',sans-serif; font-size:14px;
+      outline:none; transition:border-color .15s,box-shadow .15s; color:var(--fg);
+    }
+    .inp:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(91,82,232,.12); }
+    .inp-area {
+      width:100%; padding:12px; border-radius:12px; border:1px solid var(--border);
+      background:var(--bg); font-family:'Vazirmatn',sans-serif; font-size:14px;
+      outline:none; resize:vertical; transition:border-color .15s,box-shadow .15s; color:var(--fg);
+    }
+    .inp-area:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(91,82,232,.12); }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      display:inline-flex; align-items:center; gap:6px;
+      background:var(--primary); color:white; border:none; border-radius:12px;
+      padding:0 20px; height:40px; font-family:'Vazirmatn',sans-serif;
+      font-size:14px; font-weight:600; cursor:pointer;
+    }
+    .btn-primary:hover { background:var(--primary-dark); }
+    .btn-primary:disabled { opacity:.6; cursor:default; }
+
+    /* ── Category Chips ── */
+    .chip {
+      padding:8px 16px; border-radius:9999px; font-size:14px; font-weight:500;
+      border:1px solid var(--border); background:white; color:var(--muted-fg);
+      cursor:pointer;
+    }
+    .chip:hover { border-color:var(--primary); color:var(--primary); }
+    .chip.active  { background:var(--primary); color:white; border-color:var(--primary); }
+
+    /* ── Admin Tabs ── */
+    .tab-btn { transition:all .15s; background:transparent; border:none;
+      font-family:'Vazirmatn',sans-serif; cursor:pointer; color:var(--muted-fg); }
+    .tab-btn.active { background:white; color:var(--primary); box-shadow:0 1px 3px rgba(0,0,0,.10); }
+
+    /* ── Toast ── */
+    #toast {
+      position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px);
+      background:#0F1629; color:white; padding:12px 24px; border-radius:12px; font-size:14px;
+      z-index:9999; transition:transform .3s ease; box-shadow:0 4px 24px rgba(0,0,0,.2); white-space:nowrap;
+    }
+    #toast.show { transform:translateX(-50%) translateY(0); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.6);
+      backdrop-filter:blur(4px); display:flex; align-items:flex-end;
+      justify-content:center; padding:0;
+    }
+    @media(min-width:640px){ .modal-overlay { align-items:center; padding:16px; } }
+    .modal-box {
+      background:white; width:100%; max-width:768px;
+      border-radius:24px 24px 0 0; box-shadow:0 25px 50px rgba(0,0,0,.25);
+      max-height:95vh; display:flex; flex-direction:column;
+    }
+    @media(min-width:640px){ .modal-box { border-radius:16px; max-height:90vh; margin:32px 0; } }
+    .modal-body { overflow-y:auto; flex:1; padding:20px; }
+
+    /* ── Person Card ── */
+    .person-card { text-decoration:none; display:block; border-radius:16px;
+      border:1px solid var(--border); background:white; overflow:hidden;
+      box-shadow:0 1px 4px rgba(0,0,0,.04); transition:box-shadow .2s,border-color .2s;
+    }
+    .person-card:hover { box-shadow:0 8px 24px rgba(0,0,0,.1); border-color:rgba(91,82,232,.3); }
+    .person-card:hover .card-img { transform:scale(1.08); }
+    .card-img { transition:transform .5s ease; }
+
+    /* ── Live search ── */
+    #live-results {
+      position:absolute; top:calc(100% + 8px); left:0; right:0;
+      background:white; border:1px solid var(--border); border-radius:16px;
+      box-shadow:0 8px 32px rgba(0,0,0,.12); z-index:50; overflow:hidden; display:none;
+    }
+    #live-results.show { display:block; }
+
+    /* ── Category card colour bands ── */
+    .cc0{background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.06));border-color:#ddd6fe;color:#6d28d9;}
+    .cc1{background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(59,130,246,.06));border-color:#bfdbfe;color:#1d4ed8;}
+    .cc2{background:linear-gradient(135deg,rgba(244,63,94,.12),rgba(244,63,94,.06));border-color:#fecdd3;color:#be123c;}
+    .cc3{background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.06));border-color:#fde68a;color:#92400e;}
+    .cc4{background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(16,185,129,.06));border-color:#a7f3d0;color:#065f46;}
+    .cc5{background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(99,102,241,.06));border-color:#c7d2fe;color:#3730a3;}
+    .cc6{background:linear-gradient(135deg,rgba(236,72,153,.12),rgba(236,72,153,.06));border-color:#fbcfe8;color:#9d174d;}
+    .cc7{background:linear-gradient(135deg,rgba(20,184,166,.12),rgba(20,184,166,.06));border-color:#99f6e4;color:#0f766e;}
+    .cc8{background:linear-gradient(135deg,rgba(249,115,22,.12),rgba(249,115,22,.06));border-color:#fed7aa;color:#9a3412;}
+    .cc9{background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(6,182,212,.06));border-color:#a5f3fc;color:#0e7490;}
+
+    /* ── Responsive helpers ── */
+    @media(max-width:768px){
+      .desktop-nav { display:none !important; }
+      .mobile-btn  { display:flex !important; }
+      .hide-mobile { display:none !important; }
+    }
+    @media(min-width:769px){
+      .mobile-btn  { display:none !important; }
+      .show-md { display:flex !important; }
+    }
+    @media(min-width:640px){
+      .stats-grid { grid-template-columns:repeat(4,1fr) !important; }
+      .profile-hero { flex-direction:row !important; }
+      .profile-info { text-align:right !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toast"></div>
+<div id="modal"></div>
+<div id="app"></div>
+
+<script>
+/* ================================================================
+   INLINE SVG ICONS
+================================================================ */
+const I = {
+  book:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>`,
+  search:  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`,
+  menu:    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>`,
+  x:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
+  xsm:     `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
+  chevL:   `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`,
+  chevR:   `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
+  arrowL:  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>`,
+  users:   `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  star:    `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  trend:   `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`,
+  cal:     `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>`,
+  pin:     `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  globe:   `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`,
+  edit:    `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  trash:   `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`,
+  plus:    `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`,
+  save:    `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>`,
+  tag:     `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>`,
+  gear:    `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  sliders: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="6" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="4" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="8" y2="3"/><line x1="1" x2="7" y1="14" y2="14"/><line x1="9" x2="15" y1="12" y2="12"/><line x1="17" x2="23" y1="16" y2="16"/></svg>`,
+  catIcon: {
+    'شعر و ادبیات':   `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>`,
+    'علم و فناوری':   `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.31"/><path d="M14 9.3V1.99"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.58 16.5h12.85"/></svg>`,
+    'سیاست و تاریخ':  `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>`,
+    'هنر و موسیقی':   `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+    'فلسفه و عرفان':  `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-1.04z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-1.04z"/></svg>`,
+    'ورزش':           `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>`,
+    'سینما و تئاتر':  `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg>`,
+    'اقتصاد و تجارت': `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`,
+    'پزشکی و بهداشت': `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"/></svg>`,
+    'دین و روحانیت':  `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  }
+};
+
+/* ================================================================
+   SEED DATA
+================================================================ */
+const SEED_CATEGORIES = [
+  { id:1,  name:'شعر و ادبیات',   nameEn:'Poetry & Literature' },
+  { id:2,  name:'علم و فناوری',   nameEn:'Science & Technology' },
+  { id:3,  name:'سیاست و تاریخ',  nameEn:'Politics & History' },
+  { id:4,  name:'هنر و موسیقی',   nameEn:'Art & Music' },
+  { id:5,  name:'فلسفه و عرفان',  nameEn:'Philosophy & Mysticism' },
+  { id:6,  name:'ورزش',           nameEn:'Sports' },
+  { id:7,  name:'سینما و تئاتر',  nameEn:'Cinema & Theater' },
+  { id:8,  name:'اقتصاد و تجارت', nameEn:'Economics & Business' },
+  { id:9,  name:'پزشکی و بهداشت', nameEn:'Medicine & Health' },
+  { id:10, name:'دین و روحانیت',  nameEn:'Religion & Spirituality' },
+];
+
+const SEED_PERSONS = [
+  { id:1,  name:'حافظ شیرازی',       nameEn:'Hafez',               categoryId:1,  birthYear:1315, deathYear:1390, birthPlace:'شیراز، ایران',      nationality:'ایرانی',             isFeatured:true,
+    photoUrl:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Hafez_tomb.jpg/800px-Hafez_tomb.jpg',
+    shortBio:'حافظ بزرگ‌ترین غزل‌سرای ایرانی است که اشعارش از ۶۰۰ سال پیش تاکنون در دل‌های مردم جهان جای دارد.',
+    fullBio:'شمس‌الدین محمد حافظ شیرازی، معروف به خواجه حافظ، یکی از برجسته‌ترین شاعران جهان و بزرگ‌ترین غزل‌سرای ایرانی است. وی در قرن هشتم هجری در شیراز متولد شد و تمام عمر خود را در این شهر گذراند. دیوان حافظ که شامل بیش از ۵۰۰ غزل، ۴۲ قطعه و ۶۹ رباعی است، یکی از پرخواننده‌ترین کتاب‌های شعر فارسی در جهان به شمار می‌رود.\n\nحافظ در جوانی قرآن را حفظ کرد و همین امر لقب «حافظ» را برای او به ارمغان آورد. اشعار او سرشار از عشق، عرفان، نقد اجتماعی و فلسفه است. گوته، شاعر بزرگ آلمانی، تحت تأثیر حافظ کتاب «دیوان غربی-شرقی» را نوشت.' },
+  { id:2,  name:'فردوسی',            nameEn:'Ferdowsi',            categoryId:1,  birthYear:940,  deathYear:1020, birthPlace:'توس، ایران',        nationality:'ایرانی',             isFeatured:true,
+    photoUrl:'https://upload.wikimedia.org/wikipedia/commons/a/a7/Ferdowsi_Miniature.jpg',
+    shortBio:'ابوالقاسم فردوسی، حماسه‌سرای بزرگ ایران و خالق شاهنامه، بزرگ‌ترین اثر حماسی جهان.',
+    fullBio:'ابوالقاسم منصور بن حسن فردوسی طوسی، معروف به فردوسی، شاعر حماسه‌سرای ایرانی و خالق شاهنامه است. شاهنامه که حدود ۶۰۰۰۰ بیت دارد، بزرگ‌ترین حماسه‌ی منظوم جهان و گنجینه‌ای گران‌بها از فرهنگ و تاریخ ایران باستان به شمار می‌آید. فردوسی سی سال از عمر خود را صرف سرودن این اثر جاویدان کرد.' },
+  { id:3,  name:'مولانا',             nameEn:'Rumi',                categoryId:5,  birthYear:1207, deathYear:1273, birthPlace:'بلخ، افغانستان',   nationality:'ایرانی',             isFeatured:true,
+    photoUrl:null,
+    shortBio:'جلال‌الدین محمد بلخی، مشهور به مولانا، از بزرگ‌ترین شاعران عارف جهان و صاحب مثنوی معنوی.',
+    fullBio:'جلال‌الدین محمد بلخی، معروف به مولانا و رومی، شاعر، صوفی و عارف برجسته قرن ۷ هجری است. مثنوی معنوی او که در ۶ دفتر سروده شده، یکی از شاهکارهای ادبیات جهان به شمار می‌رود. مولانا در کنیه، قونیه (ترکیه امروزی) زندگی کرد و آثار ماندگار خود را در آنجا آفرید.' },
+  { id:4,  name:'ابن‌سینا',           nameEn:'Avicenna',            categoryId:2,  birthYear:980,  deathYear:1037, birthPlace:'بخارا، 
